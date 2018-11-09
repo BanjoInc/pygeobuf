@@ -42,7 +42,7 @@ class Encoder:
         elif data_type == 'Feature':
             self.encode_feature(data.feature, obj)
         else:
-            self.encode_geometry(data.geometry, obj, is_closed=True)
+            self.encode_geometry(data.geometry, obj)
 
         return data.SerializeToString()
 
@@ -51,13 +51,13 @@ class Encoder:
         for feature_json in feature_collection_json.get('features'):
             self.encode_feature(feature_collection.features.add(), feature_json)
 
-    def encode_feature(self, feature, feature_json, is_closed=True):
+    def encode_feature(self, feature, feature_json):
         self.encode_id(feature, feature_json.get('id'))
         self.encode_properties(feature, feature_json.get('properties'))
         self.encode_custom_properties(feature, feature_json, ('type', 'id', 'properties', 'geometry'))
-        self.encode_geometry(feature.geometry, feature_json.get('geometry'), is_closed=is_closed)
+        self.encode_geometry(feature.geometry, feature_json.get('geometry'))
 
-    def encode_geometry(self, geometry, geometry_json, is_closed=True):
+    def encode_geometry(self, geometry, geometry_json):
 
         gt = geometry_json['type']
         coords = geometry_json.get('coordinates')
@@ -77,11 +77,11 @@ class Encoder:
         elif gt == 'LineString':
             self.add_line(geometry.coords, coords)
         elif gt == 'MultiLineString':
-            self.add_multi_line(geometry, coords, is_closed=is_closed)
+            self.add_multi_line(geometry, coords)
         elif gt == 'Polygon':
-            self.add_multi_line(geometry, coords, is_closed=is_closed)
+            self.add_multi_line(geometry, coords, is_closed=False)
         elif gt == 'MultiPolygon':
-            self.add_multi_polygon(geometry, coords, is_closed=is_closed)
+            self.add_multi_polygon(geometry, coords)
 
     def encode_properties(self, obj, props_json):
         if props_json:
@@ -148,7 +148,8 @@ class Encoder:
         for x in point:
             self.add_coord(coords, x)
 
-    def add_line(self, coords, points, is_closed=True):
+    def add_line(self, coords, points, is_closed=False):
+        is_closed = True
         sum = [0] * self.dim
         r = range(0, len(points) - int(is_closed))
         for i in r:
@@ -157,7 +158,8 @@ class Encoder:
                 coords.append(n)
                 sum[j] += n
 
-    def add_multi_line(self, geometry, lines, is_closed):
+    def add_multi_line(self, geometry, lines, is_closed=False):
+        is_closed = True
         if len(lines) != 1:
             for points in lines:
                 geometry.lengths.append(len(points) - int(is_closed))
@@ -165,7 +167,8 @@ class Encoder:
         for points in lines:
             self.add_line(geometry.coords, points, is_closed)
 
-    def add_multi_polygon(self, geometry, polygons, is_closed=True):
+    def add_multi_polygon(self, geometry, polygons):
+        is_closed = True
         if len(polygons) != 1 or len(polygons[0]) != 1:
             geometry.lengths.append(len(polygons))
             for rings in polygons:
