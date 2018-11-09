@@ -73,9 +73,9 @@ class Encoder:
         elif gt == 'Point':
             self.add_point(geometry.coords, coords)
         elif gt == 'MultiPoint':
-            self.add_line(geometry.coords, coords)
+            self.add_line(geometry.coords, coords, is_closed=False)
         elif gt == 'LineString':
-            self.add_line(geometry.coords, coords)
+            self.add_line(geometry.coords, coords, is_closed=False)
         elif gt == 'MultiLineString':
             self.add_multi_line(geometry, coords, is_closed=is_closed)
         elif gt == 'Polygon':
