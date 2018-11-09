@@ -1,4 +1,4 @@
 *.pyc
-fixtures/tmp
-fixtures/*.pbf
-fixtures/*.pbf.json
+tests/test_data/tmp
+tests/test_data/*.pbf
+tests/test_data/*.pbf.json

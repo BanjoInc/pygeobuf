@@ -6,6 +6,8 @@ from setuptools import setup, find_packages
 import subprocess
 
 
+version = "2.0.1"
+
 # Try to convert README markdown to restructured text using pandoc.
 try:
     subprocess.call(
@@ -21,8 +23,9 @@ except:
 with codecs_open('README', encoding='utf-8') as f:
     long_description = f.read()
 
+
 setup(name='geobuf',
-      version='2.0.0',
+      version=version,
       description=(
           u"Geobuf is a compact binary geospatial format for lossless "
           u"compression of GeoJSON and TopoJSON data."),
